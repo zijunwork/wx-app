@@ -1108,499 +1108,496 @@ Page({
 
 
 
-#### 6、框架函数解析
+#### 32、框架函数-APP()
 
-+ `App(Object object)`
+`App(Object object)`
 
-  + 注册小程序。接受一个`Object`参数，其指定小程序的生命周期回调等。
++ 注册小程序。接受一个`Object`参数，其指定小程序的生命周期回调等。
 
-  + `App()`必须在 `app.js`中调用，必须调用且只能调用一次。
++ `App()`必须在 `app.js`中调用，必须调用且只能调用一次。
 
-  + 参数
++ 参数
 
-    + `onLaunch()`: 生命周期回调-监听小程序初始化，全局只触发一次
+  + `onLaunch()`: 生命周期回调-监听小程序初始化，全局只触发一次
 
-    + `onShow()`: 生命周期回调-监听小程序启动或切前台
+  + `onShow()`: 生命周期回调-监听小程序启动或切前台
 
-    + `onHide()`: 生命周期回调-监听小程序切后台
+  + `onHide()`: 生命周期回调-监听小程序切后台
 
-    + `onError()`: 错误监听函数，比如发生脚本错误或API调用报错
+  + `onError()`: 错误监听函数，比如发生脚本错误或API调用报错
 
-    + `onPageNotFound()`: 页面不存在监听函数，比如链接到404页面
+  + `onPageNotFound()`: 页面不存在监听函数，比如链接到404页面
 
-    + `onUnhandledRejection()`: 未处理的 Promise 拒绝事件监听函数
+  + `onUnhandledRejection()`: 未处理的 Promise 拒绝事件监听函数
 
-    + 其他：可以定义任意函数或者变量到`Object`参数中，用`this`可以访问
-
-      ```javascript
-      //app.js
-      App({
-        onLaunch: function () {
-          console.log("onLaunch 执行");
-          
-          if (!wx.cloud) {
-            console.error('请使用 2.2.3 或以上的基础库以使用云能力')
-          } else {
-            wx.cloud.init({
-              // env 参数说明：
-              //   env 参数决定接下来小程序发起的云开发调用（wx.cloud.xxx）会默认请求到哪个云环境的资源
-              //   此处请填入环境 ID, 环境 ID 可打开云控制台查看
-              //   如不填则使用默认环境（第一个创建的环境）
-              env: 'zijun-hv3gt',
-              traceUser: true,
-            })
-          }
-      
-          this.globalData = {}
-        },
-      
-        onShow(options) {
-          console.log("onShow 执行");
-          console.log(options);
-        },
-      
-        onHide(options) {
-          console.log("onHide 执行");
-          console.log(options)
-        },
-      
-        onError(msg) {
-          console.log("onError 执行");
-          console.log(msg);
-        },
-      
-        onPageNotFound(res) {
-          wx.redirectTo({
-            url: 'pages/404/404',
-          })
-        },
-      
-        globalData: "I am global data"
-      })
-      ```
-
-      
-
-+ `getApp(Object objec)`
-
-  + 获取到小程序全局唯一的`App`实例。
-  + 不要在定义于`App()`内的函数中，或调用`App`前调用`getApp()`,使用`this`就可以拿到app实例。
-  + 通过`getApp()`获取实例之后，不要私自调用生命周期函数。
-  + 参数
-    + `allowDefault`: 在`App`未定义时返回默认实现
-
-+ `Page(Object object)`
-
-  + 注册小程序中的一个页面。接受一个`Object`类型参数，其指定页面的初始数据、生命周期回调、事件处理函数等
-
-  + 参数
-
-    + `data()`: 页面的初始数据，用于页面第一次渲染
-
-    + `onLoad()`: 生命周期回调-监听页面加载，页面加载时触发，一个页面只会调用一次，可以在`onLoad`的参数中获取打开当前页面路径中的参数
-
-      + `query`: 打开当前页面路径中的参数
-
-    + `onShow()`: 生命周期回调-监听页面显示，页面显示/切入前台时触发
-
-    + `onReady()`: 生命周期回调-监听页面初次渲染完成，一个页面只会调用一次，代表页面已经准备妥当，可以和视图进行交互。
-
-      + `wx.setNavigationBarTitle`需要在`onReady()`之后进行
-
-    + `onHide()`: 生命周期回调-监听页面隐藏，页面隐藏/切入后台时触发，如调用：`wx.navigateTo()`、`wx.switchTab()`
-
-    + `onUnload()`: 生命周期回调-监听页面卸载，如调用：`wx.redirectTo()`、`wx.navigateBack()`
-
-    + `onPullDownRefresh()`: 监听用户下拉动作事件（下拉刷新）
-
-      + 需要在`app.json`的`window`选项中，或者在页面配置中开启 `enablePullDownRefresh`
-      + 可以通过 `wx.startPullDownRefresh`触发下拉刷新，当处理完数据刷新后，`wx.stopPullDownRefresh`可以停止下拉刷新动作
-
-    + `onReachBottom()`: 监听用户上拉触底动作事件（上拉触底）
-
-      + 可以在 `app.json` 的 `window` 选项中，或者在页面配置中设置触发距离 `onReachBottomDistance`
-      + 在触发距离内滑动期间，本事件只会被触发一次
-
-    + `onShareAppMessage(object)`: 用户点击右上角转发
-
-      + 只有定义了此事件处理函数，右上角菜单才会显示“转发”按钮
-      + 此事件处理函数需要 return 一个 Object，用于自定义转发内容
-      + object参数
-        + `from`: 转发事件来源：`button`:页面内转发按钮/ `menu`:右上角转发菜单
-        + `target`: 如果 `from`值是 `button`，则 `target` 是触发这次转发事件的 `button`, 否则为 `undefined`
-        + `webViewUrl`: 页面中包含web-view组件时，返回当前web-view的url
-      + return自定义转发内容
-        + `title`: 转发标题
-        + `path`: 转发路径
-        + `imageUrl`: 自定义图片路径，显示图片长宽比为5:4
-
-      ```javascript
-        /**
-         * 用户点击右上角分享
-         */
-        onShareAppMessage: function (res) {
-          if(res.from === 'button') {
-            // 来自页面内转发按钮
-            console.log(res.target);
-          }
-          return {
-            title: '音乐',
-            path: 'pages/playlist/playlist',
-            imageUrl: '../../images/share_img.jpg'
-          }
-        }
-      ```
-
-    + `onPageScroll()`: 页面滚动触发事件的函数
-      + `scrollTop`: 页面在垂直方向已滚动的距离（单位px）
-    + `onResize()`: 页面尺寸改变时触发
-    + `onTabItemTap()`: 当前是tab页时，点击tab时触发
-      + Object参数
-        + `index`: 被点击tabItem的序号，从0开始
-        + `pagePath`: 被点击tabItem的页面路径
-        + `text`: 被点击tabItem的按钮文字
-    + 其他：可以自定义任意函数或数据到 `Object` 参数中，在页面的函数中用 `this` 可以访问，比如自定义事件方法
-
-  + 需要注意的是：Page和Component不同的是，Page自定义事件函数写在Page的参数中，而Component自定义事件函数需写在Component的methods方法中。
+  + 其他：可以定义任意函数或者变量到`Object`参数中，用`this`可以访问
 
     ```javascript
-    // Page页面 js
-    Page({
-        data: {
-          // 页面初始化数据  
-        },
+    //app.js
+    App({
+      onLaunch: function () {
+        console.log("onLaunch 执行");
         
-        // ...
-        
-        goTo404 () {
-            wx.navigateTo({
-                url: '/pages/404/404'
-            })
+        if (!wx.cloud) {
+          console.error('请使用 2.2.3 或以上的基础库以使用云能力')
+        } else {
+          wx.cloud.init({
+            // env 参数说明：
+            //   env 参数决定接下来小程序发起的云开发调用（wx.cloud.xxx）会默认请求到哪个云环境的资源
+            //   此处请填入环境 ID, 环境 ID 可打开云控制台查看
+            //   如不填则使用默认环境（第一个创建的环境）
+            env: 'zijun-hv3gt',
+            traceUser: true,
+          })
         }
+    
+        this.globalData = {}
+      },
+    
+      onShow(options) {
+        console.log("onShow 执行");
+        console.log(options);
+      },
+    
+      onHide(options) {
+        console.log("onHide 执行");
+        console.log(options)
+      },
+    
+      onError(msg) {
+        console.log("onError 执行");
+        console.log(msg);
+      },
+    
+      onPageNotFound(res) {
+        wx.redirectTo({
+          url: 'pages/404/404',
+        })
+      },
+    
+      globalData: "I am global data"
     })
     ```
 
+
+
+#### 33、框架函数-Page()
+
+`Page(Object object)`
+
++ 注册小程序中的一个页面。接受一个`Object`类型参数，其指定页面的初始数据、生命周期回调、事件处理函数等
+
++ 参数
+
+  + `data()`: 页面的初始数据，用于页面第一次渲染
+
+  + `onLoad()`: 生命周期回调-监听页面加载，页面加载时触发，一个页面只会调用一次，可以在`onLoad`的参数中获取打开当前页面路径中的参数
+
+    + `query`: 打开当前页面路径中的参数
+
+  + `onShow()`: 生命周期回调-监听页面显示，页面显示/切入前台时触发
+
+  + `onReady()`: 生命周期回调-监听页面初次渲染完成，一个页面只会调用一次，代表页面已经准备妥当，可以和视图进行交互。
+
+    + `wx.setNavigationBarTitle`需要在`onReady()`之后进行
+
+  + `onHide()`: 生命周期回调-监听页面隐藏，页面隐藏/切入后台时触发，如调用：`wx.navigateTo()`、`wx.switchTab()`
+
+  + `onUnload()`: 生命周期回调-监听页面卸载，如调用：`wx.redirectTo()`、`wx.navigateBack()`
+
+  + `onPullDownRefresh()`: 监听用户下拉动作事件（下拉刷新）
+
+    + 需要在`app.json`的`window`选项中，或者在页面配置中开启 `enablePullDownRefresh`
+    + 可以通过 `wx.startPullDownRefresh`触发下拉刷新，当处理完数据刷新后，`wx.stopPullDownRefresh`可以停止下拉刷新动作
+
+  + `onReachBottom()`: 监听用户上拉触底动作事件（上拉触底）
+
+    + 可以在 `app.json` 的 `window` 选项中，或者在页面配置中设置触发距离 `onReachBottomDistance`
+    + 在触发距离内滑动期间，本事件只会被触发一次
+
+  + `onShareAppMessage(object)`: 用户点击右上角转发
+
+    + 只有定义了此事件处理函数，右上角菜单才会显示“转发”按钮
+    + 此事件处理函数需要 return 一个 Object，用于自定义转发内容
+    + object参数
+      + `from`: 转发事件来源：`button`:页面内转发按钮/ `menu`:右上角转发菜单
+      + `target`: 如果 `from`值是 `button`，则 `target` 是触发这次转发事件的 `button`, 否则为 `undefined`
+      + `webViewUrl`: 页面中包含web-view组件时，返回当前web-view的url
+    + return自定义转发内容
+      + `title`: 转发标题
+      + `path`: 转发路径
+      + `imageUrl`: 自定义图片路径，显示图片长宽比为5:4
+
     ```javascript
-    // Component js
+      /**
+       * 用户点击右上角分享
+       */
+      onShareAppMessage: function (res) {
+        if(res.from === 'button') {
+          // 来自页面内转发按钮
+          console.log(res.target);
+        }
+        return {
+          title: '音乐',
+          path: 'pages/playlist/playlist',
+          imageUrl: '../../images/share_img.jpg'
+        }
+      }
+    ```
+
+  + `onPageScroll()`: 页面滚动触发事件的函数
+    + `scrollTop`: 页面在垂直方向已滚动的距离（单位px）
+  + `onResize()`: 页面尺寸改变时触发
+  + `onTabItemTap()`: 当前是tab页时，点击tab时触发
+    + Object参数
+      + `index`: 被点击tabItem的序号，从0开始
+      + `pagePath`: 被点击tabItem的页面路径
+      + `text`: 被点击tabItem的按钮文字
+  + 其他：可以自定义任意函数或数据到 `Object` 参数中，在页面的函数中用 `this` 可以访问，比如自定义事件方法
+
++ 需要注意的是：Page和Component不同的是，Page自定义事件函数写在Page的参数中，而Component自定义事件函数需写在Component的methods方法中。
+
+  ```javascript
+  // Page页面 js
+  Page({
+      data: {
+        // 页面初始化数据  
+      },
+      
+      // ...
+      
+      goTo404 () {
+          wx.navigateTo({
+              url: '/pages/404/404'
+          })
+      }
+  })
+  ```
+
+  ```javascript
+  // Component js
+  Component({
+      properties: {
+          // 组件对外属性
+      },
+      
+      // ...
+      
+      methods: {
+          goTo404 () {
+              wx.redirectTo({
+                  url: '/pages/404/404'
+              })
+          }
+      }
+  })
+  ```
+
++ `getCurrentPages()`: 获取当前页面栈。数组中的第一个元素为首页，最后一个元素为当前页面。
+  + 注意：
+    + 不要尝试修改页面栈，会导致路由以及页面状态错误
+    + 不要在 `App.onlaunch()` 的时候调用 `getCurrentPages()` ，此时 `Page` 还没有生成
+
+
+
+#### 34、框架函数-Component()
+
+`Component(Object object)`
+
++ 创建自定义组件，接受一个 `Object` 类型的参数
+
++ 生成的组件实例可以在组件的方法、生命周期函数和属性 `observe` 中通过 `this` 访问。
+
++ 组件通用属性
+
+  + `is`: 组件的文件路径
+  + `id`: 节点id
+  + `dataset`: 节点dataset
+  + `data`: 组件数据，包括内容数据和属性值
+  + `properties`: 组件数据，包括内部数据和属性值
+
++ 组件常用方法
+
+  + `setData`: 设置data并执行视图层渲染
+
+  + `triggerEvent`: 组件触发事件
+
+    + 父组件向子组件传递数据，可以在WXML上进行数据绑定，设置属性
+
+    + 子组件向父组件传递数据，主要通过事件
+
+      + 组件内WXML文件中定义 **引发事件a**
+
+        `<view bindtap: a></view>`
+
+        如果有参数
+
+        `<view bindtap: a data-id="{{x}}" data-name="{{y}}"></view>`
+
+      + 组件内JS文件中,在设置的 **引发事件a** 中触发 **传递事件b** 传递数据
+
+        ```javascript
+        a(e) {
+            this.triggerEvent('b', detail, option)
+        }
+        ```
+
+      + 父级页面（组件）WXML文件中，在使用组件上定义 **接收事件c** 和设置 **传递事件b**
+
+        `<com bind:c="b"></com>`
+
+      + 父级页面JS文件中，设置 **接收事件c**
+
+        ```javascript
+        c(e) {
+        	console.log(e);    
+        }
+        ```
+
+    ```html
+    <!-- Components/playlist/playlist.wxml -->
+    <view class="c-playlist-container" bindtap="handleTransmit" data-id="{{palyData.id}}" data-name="{{palyData.name}}">
+      <image src="{{palyData.picUrl}}" class="c-playlist-img"></image>
+      <view class="c-playlist-tag"><image src="/images/palylist_tag.png"></image><text>{{count}}</text></view>
+      <view class="c-playlist-title">{{palyData.name}}</view>
+    </view>
+    ```
+
+    ```javascript
+    // Components/playlist/playlist.js
     Component({
-        properties: {
-            // 组件对外属性
-        },
-        
         // ...
-        
         methods: {
-            goTo404 () {
-                wx.redirectTo({
-                    url: '/pages/404/404'
-                })
+            handleTransmit(e) {
+                let query = e.currentTarget.dataset;
+                let eventDetail = {
+                    id: query.id,
+                    name: query.name
+                };
+                let eventOption = {};
+                this.triggerEvent("transmitId", eventDetail, eventOption);
             }
         }
     })
     ```
 
-+ `getCurrentPages()`: 获取当前页面栈。数组中的第一个元素为首页，最后一个元素为当前页面。
+    ```html
+    <!-- pages/playlist/playlist.wxml -->
+    <view class="playlist-wrap">
+    	<block wx:for="{{playlist}}" wx:key="id">
+    		<z-playlist paly-data="{{item}}" class="z-playlist" bind:transmitId = "transmitId"></z-playlist>
+    	</block>
+    </view>
+    ```
 
-  + 注意：
-    + 不要尝试修改页面栈，会导致路由以及页面状态错误
-    + 不要在 `App.onlaunch()` 的时候调用 `getCurrentPages()` ，此时 `Page` 还没有生成
+    ```javascript
+    // pages/playlist/playlist.js
+    Page({
+        // ...
+        transmitId(e) {
+            console.log(e.detail); // > {id: 102, name: "Chiptune丨探索像素世界"}
+        }
+    })
+    ```
 
-+ `Component(Object object)`
+  需要注意的是：
 
-  + 创建自定义组件，接受一个 `Object` 类型的参数
+  + Vue中父组件向子组件传递一个对象，子组件改变这个对象，那么父组件也会相应的改变。即数据绑定到子组件是浅拷贝的。而在微信小程序中，经实现，数据绑定则是深拷贝的，子组件修改传递的对象，不会影响到父组件的这个对象。
 
-  + 生成的组件实例可以在组件的方法、生命周期函数和属性 `observe` 中通过 `this` 访问。
+    ```html
+    <!--- pages/playlist/playlist.wxml -->
+    <view>
+    	<z-playlist transmit-data="{{transmitData}}"></z-playlist>
+    </view>
+    ```
 
-  + 组件通用属性
+    ```javascript
+    // pages/playlist/palylist.js
+    Page({
+        data: {
+            transmitData: {
+                a: 1,
+                b: 2,
+                c: 3
+            }
+        }
+    })
+    ```
 
-    + `is`: 组件的文件路径
-    + `id`: 节点id
-    + `dataset`: 节点dataset
-    + `data`: 组件数据，包括内容数据和属性值
-    + `properties`: 组件数据，包括内部数据和属性值
+    ```html
+    <!-- Components/playlist/playlist.wxml -->
+    <view bindtap="handleTransmit">
+    </view>
+    ```
 
-  + 组件常用方法
+    ```javascript
+    // Components/playlist/playlist.js
+    Component({
+        properties: {
+            transmitData: {
+                type: Object
+            }
+        },
+        
+        methods: {
+            hancleTransmit() {
+                console.log(this.data.transmitData);
+                this.setData({'transmitData.c': 10});
+                console.log(this.data.transmitData);
+            }
+        }
+    })
+    ```
 
-    + `setData`: 设置data并执行视图层渲染
+    
 
-    + `triggerEvent`: 组件触发事件
++ 参数
 
-      + 父组件向子组件传递数据，可以在WXML上进行数据绑定，设置属性
+  + `properties`: 组件的对外属性对象
 
-      + 子组件向父组件传递数据，主要通过事件
+    + 在 `properties` 定义段中，属性名采用驼峰写法(`propertiesName`)，在 `wxml`中，指定属性值时则对应使用连字符写法(`properties-name="valueName"`)，应用于数据绑定时采用驼峰写法(`valueName`)
+    + 定义段
+      + `type`: 属性的类型
+      + `optionalTypes`: 属性的额类型（可以指定多个）
+      + `value`: 属性的初始值
 
-        + 组件内WXML文件中定义 **引发事件a**
+    ```javascript
+    // Component js
+    Component({
+        properties: {
+            min: {
+                type: Number,
+                value: 0
+            },
+            max: {
+                // 这个属性可以是 Number/String/Boolean 三种类型中的一种
+                type: Number,
+                optionalTypes: [String, Boolean]
+                value: 0
+            },
+            
+        }
+    })
+    ```
 
-          `<view bindtap: a></view>`
+  + `data`: 组件的内部数据，和 `properties` 一同用于组件的模板渲染
 
-          如果有参数
+  + `observers`: 组件数据字段监听器，用于监听 `properties` 和 `data` 的变化
 
-          `<view bindtap: a data-id="{{x}}" data-name="{{y}}"></view>`
+  + `methods`: 组件的方法，包括事件响应函数和任意的自定义方法
 
-        + 组件内JS文件中,在设置的 **引发事件a** 中触发 **传递事件b** 传递数据
+  + `behaviors`: 用于组件间代码共享的特性，类似于编程语言中的“mixins”,`每个behaviors`都包含 `properties`(属性)、`data`（数据）、`methods`（方法）、`created/attached/ready/moved/detached`(生命周期函数)，组件引用时，就会合并到当前组件中
 
-          ```javascript
-          a(e) {
-              this.triggerEvent('b', detail, option)
-          }
-          ```
+    ```javascript
+    // 第一步：创建behavior.js 提供组件调用
+    // behavior.js
+    let myBehavior = Behavior({
+        properties: {
+            myName: {
+                type: String,
+                value: "Devin"
+            },
+            myType: {
+                type: String
+            }
+        },
+        
+        data: {
+            myData: {}
+        },
+        
+        attached: () => {
+            console.log("myAttached")
+        },
+        
+        methods: {
+            myMethod: () => {
+                console.log("myMethod")
+            }
+        }
+    })
+    
+    export { myBehavior }
+    ```
 
-        + 父级页面（组件）WXML文件中，在使用组件上定义 **接收事件c** 和设置 **传递事件b**
+    ```javascript
+    // 第二步：在组件中引入
+    // components/playlist/playlist.js
+    import { myBehavior } from "../../behaviors/hehavior"
+    
+    Component({
+        hehaviors: [mybehavior],
+        
+        properties: {
+            
+        },
+        
+        data: {},
+        
+        attached: () => {},
+        
+        methods: {
+            
+        }
+    })
+    ```
 
-          `<com bind:c="b"></com>`
+    ```html
+    <!-- components/playlist/playlist.wxml -->
+    <view>{{myName}}</view>
+    ```
 
-        + 父级页面JS文件中，设置 **接收事件c**
+  + `created`: 组件生命周期函数-在组件实例刚刚被创建时执行，注意此时不能调用 `setData()`
 
-          ```javascript
-          c(e) {
-          	console.log(e);    
-          }
-          ```
+  + `attached`: 组件生命周期函数-在组件实例进入页面节点树时执行
 
-      ```html
-      <!-- Components/playlist/playlist.wxml -->
-      <view class="c-playlist-container" bindtap="handleTransmit" data-id="{{palyData.id}}" data-name="{{palyData.name}}">
-        <image src="{{palyData.picUrl}}" class="c-playlist-img"></image>
-        <view class="c-playlist-tag"><image src="/images/palylist_tag.png"></image><text>{{count}}</text></view>
-        <view class="c-playlist-title">{{palyData.name}}</view>
-      </view>
-      ```
+  + `ready`: 组件生命周期函数-在组件布局完成后执行
 
-      ```javascript
-      // Components/playlist/playlist.js
-      Component({
-          // ...
-          methods: {
-              handleTransmit(e) {
-                  let query = e.currentTarget.dataset;
-                  let eventDetail = {
-                      id: query.id,
-                      name: query.name
-                  };
-                  let eventOption = {};
-                  this.triggerEvent("transmitId", eventDetail, eventOption);
-              }
-          }
-      })
-      ```
+  + `moved`: 组件生命周期函数-在组件实例被移动到节点树另一个位置时执行
 
-      ```html
-      <!-- pages/playlist/playlist.wxml -->
-      <view class="playlist-wrap">
-      	<block wx:for="{{playlist}}" wx:key="id">
-      		<z-playlist paly-data="{{item}}" class="z-playlist" bind:transmitId = "transmitId"></z-playlist>
-      	</block>
-      </view>
-      ```
+  + `detached`: 组件生命周期函数-在组件实例被从页面节点树移除时执行
 
-      ```javascript
-      // pages/playlist/playlist.js
-      Page({
-          // ...
-          transmitId(e) {
-              console.log(e.detail); // > {id: 102, name: "Chiptune丨探索像素世界"}
-          }
-      })
-      ```
+  + `relations`: 组件间关系定义，比如两个组件是父子节点关系
 
-    需要注意的是：
+  + `externalClasses`: 组件接受的外部样式类
 
-    + Vue中父组件向子组件传递一个对象，子组件改变这个对象，那么父组件也会相应的改变。即数据绑定到子组件是浅拷贝的。而在微信小程序中，经实现，数据绑定则是深拷贝的，子组件修改传递的对象，不会影响到父组件的这个对象。
+  + `options`: 一些选项
 
-      ```html
-      <!--- pages/playlist/playlist.wxml -->
-      <view>
-      	<z-playlist transmit-data="{{transmitData}}"></z-playlist>
-      </view>
-      ```
+  + `lifetimes`： 组件生命周期声明对象，推荐使用
 
-      ```javascript
-      // pages/playlist/palylist.js
-      Page({
-          data: {
-              transmitData: {
-                  a: 1,
-                  b: 2,
-                  c: 3
-              }
-          }
-      })
-      ```
+    ```javascript
+    // 组件生命周期书写方式
+    Component({
+        // 这是旧式的定义方式，可以保持对 < 2.2.3 版本基础库的兼容
+        attached: () => {},
+        detached: () => {},
+        
+        // 新式的定义方式，推荐使用
+        lifetimes: {
+            attached: () => {},
+            detached: () => {}
+        }
+    })
+    ```
 
-      ```html
-      <!-- Components/playlist/playlist.wxml -->
-      <view bindtap="handleTransmit">
-      </view>
-      ```
+  + `pageLifetimes`: 组件所在页面的生命周期声明对象
 
-      ```javascript
-      // Components/playlist/playlist.js
-      Component({
-          properties: {
-              transmitData: {
-                  type: Object
-              }
-          },
-          
-          methods: {
-              hancleTransmit() {
-                  console.log(this.data.transmitData);
-                  this.setData({'transmitData.c': 10});
-                  console.log(this.data.transmitData);
-              }
-          }
-      })
-      ```
+    + `show`: 组件所在页面被展示时执行
+    + `hide`: 组件所在页面被隐藏时执行
+    + `resize`: 组件所在页面尺寸变化时执行
 
-      
+    ```javascript
+    // 组件所在页面的生命周期书写方式
+    Component({
+        pageLifetimes: {
+            show: () => {},
+            hide: () => {},
+            resize: () => {}
+        }
+    })
+    ```
 
-  + 参数
-
-    + `properties`: 组件的对外属性对象
-
-      + 在 `properties` 定义段中，属性名采用驼峰写法(`propertiesName`)，在 `wxml`中，指定属性值时则对应使用连字符写法(`properties-name="valueName"`)，应用于数据绑定时采用驼峰写法(`valueName`)
-      + 定义段
-        + `type`: 属性的类型
-        + `optionalTypes`: 属性的额类型（可以指定多个）
-        + `value`: 属性的初始值
-
-      ```javascript
-      // Component js
-      Component({
-          properties: {
-              min: {
-                  type: Number,
-                  value: 0
-              },
-              max: {
-                  // 这个属性可以是 Number/String/Boolean 三种类型中的一种
-                  type: Number,
-                  optionalTypes: [String, Boolean]
-                  value: 0
-              },
-              
-          }
-      })
-      ```
-
-    + `data`: 组件的内部数据，和 `properties` 一同用于组件的模板渲染
-
-    + `observers`: 组件数据字段监听器，用于监听 `properties` 和 `data` 的变化
-
-    + `methods`: 组件的方法，包括事件响应函数和任意的自定义方法
-
-    + `behaviors`: 用于组件间代码共享的特性，类似于编程语言中的“mixins”,`每个behaviors`都包含 `properties`(属性)、`data`（数据）、`methods`（方法）、`created/attached/ready/moved/detached`(生命周期函数)，组件引用时，就会合并到当前组件中
-
-      ```javascript
-      // 第一步：创建behavior.js 提供组件调用
-      // behavior.js
-      let myBehavior = Behavior({
-          properties: {
-              myName: {
-                  type: String,
-                  value: "Devin"
-              },
-              myType: {
-                  type: String
-              }
-          },
-          
-          data: {
-              myData: {}
-          },
-          
-          attached: () => {
-              console.log("myAttached")
-          },
-          
-          methods: {
-              myMethod: () => {
-                  console.log("myMethod")
-              }
-          }
-      })
-      
-      export { myBehavior }
-      ```
-
-      ```javascript
-      // 第二步：在组件中引入
-      // components/playlist/playlist.js
-      import { myBehavior } from "../../behaviors/hehavior"
-      
-      Component({
-          hehaviors: [mybehavior],
-          
-          properties: {
-              
-          },
-          
-          data: {},
-          
-          attached: () => {},
-          
-          methods: {
-              
-          }
-      })
-      ```
-
-      ```html
-      <!-- components/playlist/playlist.wxml -->
-      <view>{{myName}}</view>
-      ```
-
-    + `created`: 组件生命周期函数-在组件实例刚刚被创建时执行，注意此时不能调用 `setData()`
-
-    + `attached`: 组件生命周期函数-在组件实例进入页面节点树时执行
-
-    + `ready`: 组件生命周期函数-在组件布局完成后执行
-
-    + `moved`: 组件生命周期函数-在组件实例被移动到节点树另一个位置时执行
-
-    + `detached`: 组件生命周期函数-在组件实例被从页面节点树移除时执行
-
-    + `relations`: 组件间关系定义，比如两个组件是父子节点关系
-
-    + `externalClasses`: 组件接受的外部样式类
-
-    + `options`: 一些选项
-
-    + `lifetimes`： 组件生命周期声明对象，推荐使用
-
-      ```javascript
-      // 组件生命周期书写方式
-      Component({
-          // 这是旧式的定义方式，可以保持对 < 2.2.3 版本基础库的兼容
-          attached: () => {},
-          detached: () => {},
-          
-          // 新式的定义方式，推荐使用
-          lifetimes: {
-              attached: () => {},
-              detached: () => {}
-          }
-      })
-      ```
-
-    + `pageLifetimes`: 组件所在页面的生命周期声明对象
-
-      + `show`: 组件所在页面被展示时执行
-      + `hide`: 组件所在页面被隐藏时执行
-      + `resize`: 组件所在页面尺寸变化时执行
-
-      ```javascript
-      // 组件所在页面的生命周期书写方式
-      Component({
-          pageLifetimes: {
-              show: () => {},
-              hide: () => {},
-              resize: () => {}
-          }
-      })
-      ```
-
-    + `definitionFilter`: 定义段过滤器
+  + `definitionFilter`: 定义段过滤器
 
 
 
